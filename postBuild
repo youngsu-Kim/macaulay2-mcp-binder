@@ -1,23 +1,27 @@
 #!/bin/bash
-# Binder postBuild: runs once per repo push, at image-build time, as the
-# notebook user (jovyan). Installs Macaulay2 1.26 (latest stable) and uv,
+# Binder postBuild: runs once per repo push, at image-build time (as root on
+# Binder's current base images, as jovyan on older ones). Installs Macaulay2 1.26 (latest stable) and uv,
 # and pre-warms the MCP server so "uvx macaulay2-mcp" is cached in the image
 # layer (fast launches).
 set -ex
 
+# Binder's Ubuntu 24.04 base runs builds as root and ships no sudo;
+# older bases run as jovyan WITH sudo. Work with both.
+if [ "$(id -u)" -eq 0 ]; then SUDO=""; else SUDO="sudo"; fi
+
 # --- Macaulay2 (latest stable from the official PPA) ---
-sudo apt-get update
-sudo apt-get install -y --no-install-recommends software-properties-common
-sudo add-apt-repository -y ppa:macaulay2/macaulay2
-sudo apt-get install -y --no-install-recommends macaulay2
+$SUDO apt-get update
+$SUDO apt-get install -y --no-install-recommends software-properties-common
+$SUDO add-apt-repository -y ppa:macaulay2/macaulay2
+$SUDO apt-get install -y --no-install-recommends macaulay2
 M2 --version
 
 # --- uv (Python package runner) ---
 curl -LsSf https://astral.sh/uv/install.sh | sh
 export PATH="$HOME/.local/bin:$PATH"
 # Make uv/uvx available to the notebook kernel (its PATH has no ~/.local/bin)
-sudo ln -sf "$HOME/.local/bin/uv" /usr/local/bin/uv
-sudo ln -sf "$HOME/.local/bin/uvx" /usr/local/bin/uvx
+$SUDO ln -sf "$HOME/.local/bin/uv" /usr/local/bin/uv
+$SUDO ln -sf "$HOME/.local/bin/uvx" /usr/local/bin/uvx
 
 # --- Pre-warm the MCP server and verify the whole stack ---
 # After macaulay2-mcp is published on PyPI this is just: uvx macaulay2-mcp selftest
