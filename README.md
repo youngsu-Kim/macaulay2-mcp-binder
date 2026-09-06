@@ -8,8 +8,8 @@ Click the badge, log in with GitHub (free), wait ~2–4 minutes on the first lau
 
 ## How it works
 
-- This repo only provides the *environment* (a `postBuild` script) and the demo notebook.
-- At image build time, `postBuild` installs **Macaulay2 1.26** (latest stable, from the official PPA) and **uv**, and pre-warms the MCP server so sessions start quickly.
+- This repo only provides the *environment* (a `Dockerfile`) and the demo notebook.
+- At image build time, the `Dockerfile` installs **Macaulay2 1.26** (latest stable, from the official PPA) and **uv**, and pre-warms the MCP server so sessions start quickly.
 - `demo.ipynb` is a plain **Python 3** notebook (no Macaulay2 Jupyter kernel): its cells act as an MCP *client*, spawning the MCP *server* over stdio and calling its tools.
 
 ## For real work
