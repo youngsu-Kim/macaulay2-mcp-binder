@@ -25,5 +25,4 @@ sudo ln -sf "$HOME/.local/bin/uvx" /usr/local/bin/uvx
 uvx macaulay2-mcp selftest \
   || uvx --from git+https://github.com/youngsu-Kim/macaulay2-mcp macaulay2-mcp selftest
 
-# --- Python MCP client, used by demo.ipynb ---
-pip install --no-cache-dir "mcp>=2,<3"
+# (python MCP client now declared in requirements.txt)
