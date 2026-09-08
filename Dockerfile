@@ -32,7 +32,10 @@ RUN pip install --no-cache-dir jupyterlab uv -r /tmp/requirements.txt
 RUN uvx macaulay2-mcp selftest
 
 # --- demo materials ---
+# world-writable so ANY uid a Binder cluster may run the pod under
+# (2i2c hubs sometimes use random UIDs) can save, copy, and modify the notebook.
 COPY . /srv/repo
+RUN chmod -R a+rwX /srv/repo
 WORKDIR /srv/repo
 EXPOSE 8888
 CMD ["jupyter", "lab", \
