@@ -11,14 +11,14 @@ FROM ubuntu:noble-20260810
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# --- Macaulay2 1.26 (official PPA) + python3/venv base tooling ---
+# --- python3/venv base tooling only: NO system Macaulay2 on this branch.
+#     The kernel ships inside the image via the passagemath-macaulay2 PyPI
+#     wheels, exercising the server's wheel fallback (official-first
+#     discovery finds no M2 on PATH, so the sage_wheels copy is used). ---
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        ca-certificates python3 python3-venv software-properties-common && \
-    add-apt-repository -y ppa:macaulay2/macaulay2 && \
-    apt-get install -y --no-install-recommends macaulay2 && \
-    rm -rf /var/lib/apt/lists/* && \
-    M2 --version
+        ca-certificates python3 python3-venv && \
+    rm -rf /var/lib/apt/lists/*
 
 # --- Jupyter + uv + the demo's python MCP client in one venv (no conda,
 #     no curl-pipe installers: uv ships as a plain PyPI wheel) ---
@@ -29,7 +29,10 @@ RUN pip install --no-cache-dir jupyterlab uv -r /tmp/requirements.txt
 
 # --- Pre-warm the published MCP server; runs during the build, so the
 #     first notebook launch is instant and a broken image never ships ---
-RUN uvx macaulay2-mcp selftest
+# Pre-warm = build-time E2E of the wheel fallback: no M2 is on PATH here,
+# so the server's selftest can only pass by discovering the kernel that
+# --with passagemath-macaulay2 placed into the ephemeral environment.
+RUN uvx --with passagemath-macaulay2 --from git+https://github.com/youngsu-Kim/macaulay2-mcp@passagemath-support macaulay2-mcp selftest
 
 # --- demo materials ---
 # world-writable so ANY uid a Binder cluster may run the pod under

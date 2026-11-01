@@ -9,7 +9,7 @@ Click the badge, log in with GitHub (free), wait ~2–4 minutes on the first lau
 ## How it works
 
 - This repo only provides the *environment* (a `Dockerfile`) and the demo notebook.
-- At image build time, the `Dockerfile` installs **Macaulay2 1.26** (latest stable, from the official PPA) and **uv**, and pre-warms the MCP server so sessions start quickly.
+- **This branch (`psm-m2`)** installs **no system Macaulay2**: the kernel arrives via the [passagemath-macaulay2](https://pypi.org/project/passagemath-macaulay2/) PyPI wheels together with the server (one `uvx --with` command), running the [`passagemath-support`](https://github.com/youngsu-Kim/macaulay2-mcp/tree/passagemath-support) feature branch's wheel fallback. The sibling branch [`ppa`](https://github.com/youngsu-Kim/macaulay2-mcp-binder/tree/ppa) uses the official Ubuntu PPA kernel instead.
 - `demo.ipynb` is a plain **Python 3** notebook (no Macaulay2 Jupyter kernel): its cells act as an MCP *client*, spawning the MCP *server* over stdio and calling its tools.
 
 ## For real work
