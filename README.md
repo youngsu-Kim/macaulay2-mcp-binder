@@ -6,6 +6,8 @@ A **zero-install playground** for the [macaulay2 MCP server](https://github.com/
 
 Click the badge, log in with GitHub (free), wait ~2–4 minutes on the first launch, then open **`demo.ipynb`**. The notebook runs the MCP server inside your browser session and drives it with the standard Model Context Protocol — the same way Claude Code or opencode use it on your machine. You can play with Groebner bases, resolutions, Betti tables, and package loading without installing anything.
 
+> **Status (2026-11-01): blocked upstream.** The build fails at the selftest because the wheel's `M2-binary` is compiled for AVX-512 (10,936 `zmm` instructions, e.g. `vfmadd231pd %zmm…`) while this fleet's AMD nodes expose only avx/avx2 — the process dies with SIGILL (exit 132) at startup. Needs an upstream rebuild for a baseline CPU target (x86-64-v2/v3) or tiered wheels; tracked in [macaulay2-mcp#2](https://github.com/youngsu-Kim/macaulay2-mcp/issues/2).
+
 ## How it works
 
 - This repo only provides the *environment* (a `Dockerfile`) and the demo notebook.
