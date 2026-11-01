@@ -14,7 +14,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 # --- Macaulay2 1.26 (official PPA) + python3/venv base tooling ---
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        ca-certificates python3 python3-venv software-properties-common && \
+        ca-certificates git python3 python3-venv software-properties-common && \
     add-apt-repository -y ppa:macaulay2/macaulay2 && \
     apt-get install -y --no-install-recommends macaulay2 && \
     rm -rf /var/lib/apt/lists/* && \
