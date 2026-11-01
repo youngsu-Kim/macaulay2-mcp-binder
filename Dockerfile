@@ -17,7 +17,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 #     discovery finds no M2 on PATH, so the sage_wheels copy is used). ---
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        ca-certificates python3 python3-venv && \
+        ca-certificates git python3 python3-venv && \
     rm -rf /var/lib/apt/lists/*
 
 # --- Jupyter + uv + the demo's python MCP client in one venv (no conda,
