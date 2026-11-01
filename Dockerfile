@@ -29,7 +29,7 @@ RUN pip install --no-cache-dir jupyterlab uv -r /tmp/requirements.txt
 
 # --- Pre-warm the published MCP server; runs during the build, so the
 #     first notebook launch is instant and a broken image never ships ---
-RUN uvx macaulay2-mcp selftest
+RUN uvx --from git+https://github.com/youngsu-Kim/macaulay2-mcp@passagemath-support macaulay2-mcp selftest
 
 # --- demo materials ---
 # world-writable so ANY uid a Binder cluster may run the pod under
