@@ -32,7 +32,12 @@ RUN pip install --no-cache-dir jupyterlab uv -r /tmp/requirements.txt
 # Pre-warm = build-time E2E of the wheel fallback: no M2 is on PATH here,
 # so the server's selftest can only pass by discovering the kernel that
 # --with passagemath-macaulay2 placed into the ephemeral environment.
-RUN uvx --with passagemath-macaulay2 --from git+https://github.com/youngsu-Kim/macaulay2-mcp@passagemath-support macaulay2-mcp selftest || (echo '=== DEBUG ==='; M2B=$(find /root/.cache/uv -name M2 -type f | head -1); BDIR=$(dirname "$M2B"); SPK=$(dirname "$(dirname "$BDIR")"); echo "binary: $M2B"; echo "libs dir exists: $(ls -d "$SPK/passagemath_macaulay2.libs" 2>&1)"; ls "$SPK/passagemath_macaulay2.libs" 2>/dev/null | head -3; "$M2B" --version 2>&1; echo "wrapper exit=$?"; LD_LIBRARY_PATH="$SPK/passagemath_macaulay2.libs" "$BDIR/M2-binary" --version 2>&1; echo "binary-with-libs exit=$?"; grep -m1 -o 'avx[0-9a-z_]*' /proc/cpuinfo | head -5; ulimit -s; cat /etc/os-release | head -2; exit 1)
+# This branch pins the wheel to 10.8.14rc1 — the first build carrying the
+# AVX-512 fix (upstream passagemath#3001, fat-binary rebuild #3004); the
+# stable 10.8.13 SIGILLs on avx/avx2-only fleet nodes (that variant lives
+# on branch psm-m2, unchanged). Server from PyPI 0.1.5 rather than the
+# parked passagemath-support git branch (tombstoned for deletion ~Dec 1).
+RUN uvx --from 'macaulay2-mcp==0.1.5' --with 'passagemath-macaulay2==10.8.14rc1' macaulay2-mcp selftest || (echo '=== DEBUG ==='; M2B=$(find /root/.cache/uv -name M2 -type f | head -1); BDIR=$(dirname "$M2B"); SPK=$(dirname "$(dirname "$BDIR")"); echo "binary: $M2B"; echo "libs dir exists: $(ls -d "$SPK/passagemath_macaulay2.libs" 2>&1)"; ls "$SPK/passagemath_macaulay2.libs" 2>/dev/null | head -3; "$M2B" --version 2>&1; echo "wrapper exit=$?"; LD_LIBRARY_PATH="$SPK/passagemath_macaulay2.libs" "$BDIR/M2-binary" --version 2>&1; echo "binary-with-libs exit=$?"; grep -m1 -o 'avx[0-9a-z_]*' /proc/cpuinfo | head -5; ulimit -s; cat /etc/os-release | head -2; exit 1)
 
 # --- demo materials ---
 # world-writable so ANY uid a Binder cluster may run the pod under
